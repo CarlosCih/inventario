@@ -74,13 +74,3 @@ class Modelo(CatalogAbstract):
     
     def __str__(self):
         return f"{self.marca.name} - {self.name}"
-
-
-class Location(CatalogAbstract):
-    class Meta:
-        verbose_name = "Ubicación"
-        verbose_name_plural = "Ubicaciones"
-        constraints = [
-            models.UniqueConstraint(fields=["name"], name="uq_location_name"),
-        ]
-    
