@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from catalogs.models import Estado, UnitOfMeasure, Categoria, Marca, Modelo, Location
+from catalogs.models import Estado, UnitOfMeasure, Categoria, Marca, Modelo
 
 
 class Command(BaseCommand):
@@ -22,9 +22,6 @@ class Command(BaseCommand):
         
         # Seed Modelos (requiere marcas)
         self.seed_modelos()
-        
-        # Seed Ubicaciones
-        self.seed_ubicaciones()
         
         self.stdout.write(self.style.SUCCESS('✓ Seed completado exitosamente'))
 
@@ -196,32 +193,3 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING(f'  ! Marca no encontrada: {marca_name}'))
         
         self.stdout.write(self.style.SUCCESS(f'✓ Modelos: {count} creados'))
-
-    def seed_ubicaciones(self):
-        """Crea ubicaciones de ejemplo"""
-        ubicaciones = [
-            'Almacén General',
-            'Almacén Temporal',
-            'Oficina Central',
-            'Piso 1 - Recepción',
-            'Piso 2 - Administración',
-            'Piso 3 - IT',
-            'Sucursal Norte',
-            'Sucursal Sur',
-            'Sucursal Este',
-            'Sucursal Oeste',
-            'Bodega A',
-            'Bodega B',
-            'En tránsito',
-            'Mantenimiento',
-            'Sala de juntas',
-        ]
-        
-        count = 0
-        for ubicacion_name in ubicaciones:
-            ubicacion, created = Location.objects.get_or_create(name=ubicacion_name)
-            if created:
-                count += 1
-                self.stdout.write(f'  - Ubicación creada: {ubicacion_name}')
-        
-        self.stdout.write(self.style.SUCCESS(f'✓ Ubicaciones: {count} creadas'))
