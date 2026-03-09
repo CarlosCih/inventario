@@ -28,6 +28,18 @@ class Item(models.Model):
         related_name='items',
         verbose_name='Unidad de medida'
     )
+    category = models.ForeignKey(
+        'catalogs.Categoria',
+        on_delete=models.PROTECT,
+        related_name='items',
+        verbose_name='Categoría'
+    )
+    brand = models.ForeignKey(
+        'catalogs.Marca',
+        on_delete=models.PROTECT,
+        related_name='items',
+        verbose_name='Marca'
+    )
     is_serialized = models.BooleanField(
         default=False,
         db_index=True,

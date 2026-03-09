@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from inventory.models import Item, Asset, Stock
-from catalogs.models import UnitOfMeasure, Estado
+from catalogs.models import UnitOfMeasure, Estado, Categoria, Marca
 from locations.models import Location
 from decimal import Decimal
 import random
@@ -50,6 +50,18 @@ class Command(BaseCommand):
             ))
             return False
         
+        if not Categoria.objects.exists():
+            self.stdout.write(self.style.ERROR(
+                '✗ Error: No hay categorías. Ejecute primero: python manage.py seed_catalogs'
+            ))
+            return False
+        
+        if not Marca.objects.exists():
+            self.stdout.write(self.style.ERROR(
+                '✗ Error: No hay marcas. Ejecute primero: python manage.py seed_catalogs'
+            ))
+            return False
+        
         self.stdout.write(self.style.SUCCESS('✓ Todas las dependencias están disponibles'))
         return True
 
@@ -64,7 +76,29 @@ class Command(BaseCommand):
         except UnitOfMeasure.DoesNotExist as e:
             self.stdout.write(self.style.ERROR(f'✗ Error: Falta una unidad de medida: {str(e)}'))
             return
-        
+
+        # Obtener categorías
+        try:
+            cat_computo = Categoria.objects.get(name='Equipos de cómputo')
+            cat_muebles = Categoria.objects.get(name='Muebles de oficina')
+            cat_papeleria = Categoria.objects.get(name='Papelería')
+            cat_consumibles = Categoria.objects.get(name='Consumibles')
+            cat_accesorios = Categoria.objects.get(name='Accesorios')
+        except Categoria.DoesNotExist as e:
+            self.stdout.write(self.style.ERROR(f'✗ Error: Falta una categoría: {str(e)}'))
+            return
+
+        # Obtener marcas
+        try:
+            marca_dell = Marca.objects.get(name='Dell')
+            marca_hp = Marca.objects.get(name='HP')
+            marca_samsung = Marca.objects.get(name='Samsung')
+            marca_logitech = Marca.objects.get(name='Logitech')
+            marca_generic = Marca.objects.get(name='Generic')
+        except Marca.DoesNotExist as e:
+            self.stdout.write(self.style.ERROR(f'✗ Error: Falta una marca: {str(e)}'))
+            return
+
         items_data = [
             # Equipos de cómputo - Serializados
             {
@@ -72,6 +106,8 @@ class Command(BaseCommand):
                 'name': 'Laptop Dell Latitude 5420',
                 'description': 'Laptop empresarial, Intel Core i5, 8GB RAM, 256GB SSD',
                 'unitofmeasure': uom_pieza,
+                'category': cat_computo,
+                'brand': marca_dell,
                 'is_serialized': True,
                 'is_lot_controlled': False,
                 'has_expiration': False,
@@ -81,6 +117,8 @@ class Command(BaseCommand):
                 'name': 'Laptop HP ProBook 450',
                 'description': 'Laptop empresarial, Intel Core i7, 16GB RAM, 512GB SSD',
                 'unitofmeasure': uom_pieza,
+                'category': cat_computo,
+                'brand': marca_hp,
                 'is_serialized': True,
                 'is_lot_controlled': False,
                 'has_expiration': False,
@@ -90,6 +128,8 @@ class Command(BaseCommand):
                 'name': 'Monitor Samsung 27 pulgadas',
                 'description': 'Monitor LED Full HD 1920x1080, HDMI',
                 'unitofmeasure': uom_pieza,
+                'category': cat_computo,
+                'brand': marca_samsung,
                 'is_serialized': True,
                 'is_lot_controlled': False,
                 'has_expiration': False,
@@ -99,6 +139,8 @@ class Command(BaseCommand):
                 'name': 'Teclado Logitech MK270',
                 'description': 'Teclado inalámbrico con mouse incluido',
                 'unitofmeasure': uom_juego,
+                'category': cat_accesorios,
+                'brand': marca_logitech,
                 'is_serialized': True,
                 'is_lot_controlled': False,
                 'has_expiration': False,
@@ -108,17 +150,21 @@ class Command(BaseCommand):
                 'name': 'Impresora HP LaserJet Pro M404',
                 'description': 'Impresora láser monocromática, red y USB',
                 'unitofmeasure': uom_pieza,
+                'category': cat_computo,
+                'brand': marca_hp,
                 'is_serialized': True,
                 'is_lot_controlled': False,
                 'has_expiration': False,
             },
-            
+
             # Muebles - Serializados
             {
                 'sku': 'MUEB-ESC-001',
                 'name': 'Escritorio ejecutivo',
                 'description': 'Escritorio de madera 1.60m x 0.80m',
                 'unitofmeasure': uom_pieza,
+                'category': cat_muebles,
+                'brand': marca_generic,
                 'is_serialized': True,
                 'is_lot_controlled': False,
                 'has_expiration': False,
@@ -128,17 +174,21 @@ class Command(BaseCommand):
                 'name': 'Silla ergonómica',
                 'description': 'Silla de oficina con soporte lumbar, altura ajustable',
                 'unitofmeasure': uom_pieza,
+                'category': cat_muebles,
+                'brand': marca_generic,
                 'is_serialized': True,
                 'is_lot_controlled': False,
                 'has_expiration': False,
             },
-            
+
             # Consumibles - No serializados, control por cantidad
             {
                 'sku': 'CONS-PAP-001',
                 'name': 'Papel bond carta',
                 'description': 'Resma de papel bond tamaño carta, 500 hojas',
                 'unitofmeasure': uom_caja,
+                'category': cat_papeleria,
+                'brand': marca_generic,
                 'is_serialized': False,
                 'is_lot_controlled': False,
                 'has_expiration': False,
@@ -148,6 +198,8 @@ class Command(BaseCommand):
                 'name': 'Bolígrafos azules',
                 'description': 'Caja de bolígrafos punto fino, tinta azul',
                 'unitofmeasure': uom_caja,
+                'category': cat_papeleria,
+                'brand': marca_generic,
                 'is_serialized': False,
                 'is_lot_controlled': False,
                 'has_expiration': False,
@@ -157,6 +209,8 @@ class Command(BaseCommand):
                 'name': 'Toner HP 26A negro',
                 'description': 'Cartucho de toner compatible con LaserJet Pro M404',
                 'unitofmeasure': uom_pieza,
+                'category': cat_consumibles,
+                'brand': marca_hp,
                 'is_serialized': False,
                 'is_lot_controlled': True,
                 'has_expiration': True,

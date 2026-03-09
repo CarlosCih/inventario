@@ -89,6 +89,8 @@ class Command(BaseCommand):
             status_pending = TransactionStatus.objects.get(code='PENDING')
             status_applied = TransactionStatus.objects.get(code='APPLIED')
             status_cancelled = TransactionStatus.objects.get(code='CANCELLED')
+            status_reversed = TransactionStatus.objects.get(code='REVERSED')
+            status_completed = TransactionStatus.objects.get(code='COMPLETED')
             
         except (TransactionType.DoesNotExist, TransactionStatus.DoesNotExist) as e:
             self.stdout.write(self.style.ERROR(
@@ -279,7 +281,7 @@ class Command(BaseCommand):
             status=status_applied,
             reference='ASG-2026-001',
             number='ASG-2026-001',
-            notes='Asignación de equipo a usuario',
+            notes='Asignación de equipo a usuario - ciclo completo',
             performed_at=timezone.now() - timedelta(days=20),
             created_by=user,
             is_applied=True,
@@ -314,13 +316,13 @@ class Command(BaseCommand):
         transaction_count += 1
         self.stdout.write(f'  ✓ Transacción creada: {transaction.number} - {transaction.transaction_type.name}')
         
-        # 8. DEVOLUCIÓN - Aplicada
+        # 8. DEVOLUCIÓN - Completada
         transaction = InventoryTransaction.objects.create(
             transaction_type=type_return,
-            status=status_applied,
+            status=status_completed,
             reference='DEV-2026-001',
             number='DEV-2026-001',
-            notes='Devolución de artículo previamente asignado',
+            notes='Devolución de artículo previamente asignado - recibido y cerrado',
             performed_at=timezone.now() - timedelta(days=3),
             created_by=user,
             is_applied=True,
