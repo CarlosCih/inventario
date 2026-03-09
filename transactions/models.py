@@ -2,8 +2,29 @@ from decimal import Decimal
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 # Create your models here.
+
+class TransactionTag(models.Model):
+    """Modelo para etiquetar transacciones con palabras clave, facilitando su búsqueda y categorización."""
+    name = models.CharField(max_length=50, unique=True, db_index=True, verbose_name="Nombre")
+    code = models.CharField(max_length=50, unique=True, db_index=True, verbose_name="Código")
+    description = models.TextField(blank=True, null=True, verbose_name="Descripción")
+    color = models.CharField(max_length=7, blank=True, null=True, verbose_name="Color (Hex)", default= "#6B7280")
+    is_active = models.BooleanField(default=True, verbose_name="Activo")
+    is_auto = models.BooleanField(default=False, verbose_name="Etiqueta automática")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Creado el")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Actualizado el")
+    
+    class Meta: 
+        verbose_name = "Etiqueta de Transacción"
+        verbose_name_plural = "Etiquetas de Transacción"
+        ordering = ['name']
+        
+    def __str__(self):
+        return self.name
 
 class TransactionType(models.Model):
 
@@ -107,6 +128,7 @@ class InventoryTransaction(models.Model):
     status = models.ForeignKey(TransactionStatus, on_delete=models.PROTECT, related_name="transactions", verbose_name="Estado de Transacción")
     reference = models.CharField(max_length=100, blank=True, null=True, db_index=True, verbose_name="Referencia")
     number= models.CharField(max_length=30, unique=True, db_index=True, verbose_name="Folio")
+    tags = models.ManyToManyField(TransactionTag, blank=True, related_name="transactions", verbose_name="Etiquetas")
     notes=models.TextField(blank=True, null=True, verbose_name="Notas")
     performed_at = models.DateTimeField(verbose_name="Fecha y Hora de la Transacción")
     created_by = models.ForeignKey(
@@ -124,6 +146,11 @@ class InventoryTransaction(models.Model):
         verbose_name = "Transacción de Inventario"
         verbose_name_plural = "Transacciones de Inventario"
         ordering = ['-performed_at']
+        indexes = [
+            models.Index(fields=["status"]),
+            models.Index(fields=["performed_at"]),
+            models.Index(fields=["transaction_type"]),
+        ]
         
     def __str__(self):
         return f"{self.transaction_type.name} - {self.performed_at}"
@@ -174,6 +201,20 @@ class TransactionDetail(models.Model):
     class Meta:
         verbose_name = "Detalle de Transacción"
         verbose_name_plural = "Detalles de Transacción"
+        indexes = [
+            models.Index(fields=["item"]),
+        ]
         
     def __str__(self):
         return f"{self.item.name} - {self.quantity}"
+
+
+# Signals
+@receiver(post_save, sender=InventoryTransaction)
+def generate_transaction_folio(sender, instance, created, **kwargs):
+    """Genera automáticamente el folio cuando se crea una transacción sin número"""
+    if created and not instance.number:
+        # Importar aquí para evitar importación circular
+        from transactions.services import auto_folio_transaction
+        auto_folio_transaction(instance)
+

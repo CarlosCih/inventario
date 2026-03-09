@@ -32,3 +32,11 @@ class TransactionDetailAdmin(admin.ModelAdmin):
     list_filter = ('transaction', 'created_at')
     search_fields = ('item__name',)
     ordering = ('-created_at',)
+    
+@admin.register(TransactionTag)
+class TransactionTagAdmin(admin.ModelAdmin):
+    list_display = ('id', 'code', 'name', 'description', 'color', 'is_auto')
+    readonly_fields = ('created_at', 'updated_at')
+    list_filter = ('is_auto', 'created_at')
+    search_fields = ('name',)
+    ordering = ('name',)

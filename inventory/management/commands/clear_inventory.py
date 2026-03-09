@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db import connection
 from inventory.models import Item, Asset, Stock
 
 
@@ -36,5 +37,33 @@ class Command(BaseCommand):
         item_count = Item.objects.count()
         Item.objects.all().delete()
         self.stdout.write(f'  - {item_count} Artículos eliminados')
+        
+        # Reiniciar secuencias de IDs
+        self.stdout.write('\nReiniciando secuencias de IDs...')
+        self.reset_sequences([Stock, Asset, Item])
 
-        self.stdout.write(self.style.SUCCESS('✓ Todos los datos de inventario han sido eliminados'))
+        self.stdout.write(self.style.SUCCESS('\n✓ Todos los datos de inventario han sido eliminados'))
+        self.stdout.write(self.style.SUCCESS('✓ Secuencias reiniciadas correctamente'))
+    
+    def reset_sequences(self, models_list):
+        """Reinicia las secuencias de auto-incremento de las tablas"""
+        with connection.cursor() as cursor:
+            db_vendor = connection.vendor
+            
+            for model in models_list:
+                table_name = model._meta.db_table
+                
+                if db_vendor == 'sqlite':
+                    cursor.execute(
+                        f"DELETE FROM sqlite_sequence WHERE name='{table_name}';"
+                    )
+                elif db_vendor == 'postgresql':
+                    cursor.execute(
+                        f"ALTER SEQUENCE {table_name}_id_seq RESTART WITH 1;"
+                    )
+                elif db_vendor == 'mysql':
+                    cursor.execute(
+                        f"ALTER TABLE {table_name} AUTO_INCREMENT = 1;"
+                    )
+                
+                self.stdout.write(f'  ↻ Secuencia reiniciada: {table_name}')

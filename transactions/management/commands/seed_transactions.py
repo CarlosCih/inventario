@@ -5,8 +5,10 @@ from transactions.models import (
     TransactionType,
     TransactionStatus,
     InventoryTransaction,
-    TransactionDetail
+    TransactionDetail,
+    TransactionTag
 )
+from transactions.services import auto_tag_transaction
 from inventory.models import Item
 from locations.models import Location
 from decimal import Decimal
@@ -394,6 +396,14 @@ class Command(BaseCommand):
         transaction_count += 1
         self.stdout.write(f'  ✓ Transacción creada: {transaction.number} - {transaction.transaction_type.name}')
         
+        # Aplicar etiquetas automáticas a todas las transacciones
+        self.stdout.write(self.style.WARNING('\nAplicando etiquetas automáticas...'))
+        self.apply_auto_tags()
+        
+        # Aplicar etiquetas manuales adicionales para casos específicos
+        self.stdout.write(self.style.WARNING('Aplicando etiquetas manuales adicionales...'))
+        self.apply_manual_tags()
+        
         # Resumen final
         self.stdout.write(self.style.SUCCESS(
             f'\n✓ Transacciones creadas: {transaction_count}'
@@ -401,3 +411,65 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS(
             f'✓ Detalles de transacción creados: {detail_count}'
         ))
+    
+    def apply_auto_tags(self):
+        """Aplica etiquetas automáticas a todas las transacciones creadas"""
+        transactions = InventoryTransaction.objects.all()
+        total_tags_applied = 0
+        
+        for transaction in transactions:
+            try:
+                tags = auto_tag_transaction(transaction)
+                if tags:
+                    total_tags_applied += len(tags)
+                    tag_names = ', '.join([tag.name for tag in tags])
+                    self.stdout.write(
+                        f'  ✓ {transaction.number}: {tag_names}'
+                    )
+            except Exception as e:
+                self.stdout.write(
+                    self.style.WARNING(
+                        f'  ⚠ {transaction.number}: Error al aplicar tags - {str(e)}'
+                    )
+                )
+        
+        self.stdout.write(self.style.SUCCESS(
+            f'✓ Total de etiquetas automáticas aplicadas: {total_tags_applied}'
+        ))
+    
+    def apply_manual_tags(self):
+        """Aplica etiquetas manuales específicas a ciertas transacciones"""
+        total_manual_tags = 0
+        
+        # Obtener las etiquetas manuales disponibles
+        try:
+            tag_requires_approval = TransactionTag.objects.get(code='REQUIRES_APPROVAL')
+        except TransactionTag.DoesNotExist:
+            self.stdout.write(
+                self.style.WARNING(
+                    '  ⚠ Etiqueta REQUIRES_APPROVAL no encontrada'
+                )
+            )
+            tag_requires_approval = None
+        
+        # Aplicar tag "Requiere aprobación" a transacciones en borrador o pendientes
+        if tag_requires_approval:
+            draft_transactions = InventoryTransaction.objects.filter(
+                status__code__in=['DRAFT', 'PENDING']
+            )
+            
+            for transaction in draft_transactions:
+                transaction.tags.add(tag_requires_approval)
+                total_manual_tags += 1
+                self.stdout.write(
+                    f'  ✓ {transaction.number}: {tag_requires_approval.name}'
+                )
+        
+        if total_manual_tags > 0:
+            self.stdout.write(self.style.SUCCESS(
+                f'✓ Total de etiquetas manuales aplicadas: {total_manual_tags}'
+            ))
+        else:
+            self.stdout.write(
+                self.style.WARNING('⚠ No se aplicaron etiquetas manuales')
+            )
