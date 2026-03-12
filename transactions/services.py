@@ -4,21 +4,31 @@ from transactions.models import *
 from django.core.exceptions import ValidationError
 from inventory.services import *
 from decimal import Decimal
+from api.exceptions import *
 
 def validate_transaction_for_application(transaction_obj):
     """Valida si una transaccion puede aplicarse al inventario"""
     if not isinstance(transaction_obj, InventoryTransaction):
-        raise ValidationError("El objeto proporcionado no es una transacción válida.")
+        raise InvalidTransactionTypeException()
     if transaction_obj.applied_at is not None:
-        raise ValidationError("La transacción ya ha sido aplicada.")
+        raise TransactionAlreadyAppliedException()
     if transaction_obj.status.code != "COMPLETED":
-        raise ValidationError("Solo se pueden aplicar transacciones completadas.")
+        raise InvalidTransactionTypeException(
+            transaction_type=transaction_obj.transaction_type.name,
+            reason="Solo se pueden aplicar transacciones con estado 'COMPLETED'."
+        )
     if not transaction_obj.transaction_type.is_active:
-        raise ValidationError("El tipo de transacción no está activo.")
+        raise InvalidTransactionTypeException(
+            transaction_type=transaction_obj.transaction_type.name,
+            reason="El tipo de transacción no está activo."
+        )
     if not transaction_obj.status.is_active:
-        raise ValidationError("El estado de la transacción no está activo.")
+        raise InvalidTransactionTypeException(
+            transaction_type=transaction_obj.transaction_type.name,
+            reason="El estado de la transacción no está activo."
+        )
     if not transaction_obj.details.exists():
-        raise ValidationError("La transacción no tiene detalles asociados.")
+        raise EmptyTransactionException()
     tx_type = transaction_obj.transaction_type
     for detail in transaction_obj.details.select_related(
         "item",

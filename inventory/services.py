@@ -6,6 +6,7 @@ from transactions.models import InventoryTransaction, TransactionType
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from transactions.services import *
+from api.exceptions import *
 
 #Archivos que deben estar en inventory/services.py:
 # get_or_create_stock
@@ -39,10 +40,11 @@ def validate_stock_availability(item, location, qty):
     available_qty = get_stock_quantity(item=item, location=location)
 
     if available_qty < qty:
-        location_name = str(location) if location else "Sin ubicación"
-        raise ValidationError(
-            f"Stock insuficiente para '{item}' en '{location_name}'. "
-            f"Disponible: {available_qty}, requerido: {qty}."
+        raise InsufficientStockException(
+            item_name=item.name,
+            available=available_qty,
+            requested=qty,
+            location_name=location.name if location else "N/A"
         )
 
 def increase_stock(item, location, qty):
@@ -68,6 +70,6 @@ def decrease_stock(item, location, qty):
 def transfer_stock(item, source_location, target_location, qty):
     """Transfiere stock entre ubicaciones."""
     if source_location == target_location:
-        raise ValidationError("La ubicación origen y destino no pueden ser la misma.")
+        raise SameSourceAndTargetException()
     decrease_stock(item=item, location=source_location, qty=qty)
     increase_stock(item=item, location=target_location, qty=qty)
