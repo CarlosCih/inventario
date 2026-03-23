@@ -7,6 +7,10 @@ db.sqlite3
 media
 *.env
 
+#database
+*.db
+
+
 # Logs folder
 logs/
 

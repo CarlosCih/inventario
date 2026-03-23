@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container-fluid">
+  <h1 class="mb-4">Bienvenido al Sistema de Inventario</h1>
+  <p class="lead">Panel de control del módulo de inventario.</p>
+  
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Productos</h5>
+          <p class="card-text">Gestiona el catálogo de productos.</p>
+          <a href="#" class="btn btn-primary">Ver Productos</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Inventario</h5>
+          <p class="card-text">Consulta niveles de stock.</p>
+          <a href="#" class="btn btn-primary">Ver Inventario</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Reportes</h5>
+          <p class="card-text">Genera reportes de actividad.</p>
+          <a href="#" class="btn btn-primary">Ver Reportes</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
