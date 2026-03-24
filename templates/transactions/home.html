@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h1>Welcome to the Transactions Home Page</h1>
+    <p>This is the home page for the Transactions module. Here you can manage all your transactions.</p>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-clipboard-check fs-1 text-primary"></i>
+                    </div>
+                    <h6 class="card-title fw-bold mb-2">Estados de Transacciones</h6>
+                    <p class="text-muted small mb-3">Gestionar estados de transacciones</p>
+                    <a href="#" class="btn btn-sm btn-primary">Ver Estados</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-tags fs-1 text-primary"></i>
+                    </div>
+                    <h6 class="card-title fw-bold mb-2">Etiquetas</h6>
+                    <p class="text-muted small mb-3">Gestionar etiquetas de transacciones</p>
+                    <a href="#" class="btn btn-sm btn-primary">Ver Etiquetas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-card-checklist fs-1 text-primary"></i>
+                    </div>
+                    <h6 class="card-title fw-bold mb-2">Tipo de Transacciones</h6>
+                    <p class="text-muted small mb-3">Gestionar tipos de transacciones</p>
+                    <a href="#" class="btn btn-sm btn-primary">Ver Tipos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-arrow-repeat fs-1 text-primary"></i>
+                    </div>
+                    <h6 class="card-title fw-bold mb-2">Transacciones de inventario</h6>
+                    <p class="text-muted small mb-3">Gestionar transacciones de inventario</p>
+                    <a href="#" class="btn btn-sm btn-primary">Ver Transacciones</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-journal-text fs-1 text-primary"></i>
+                    </div>
+                    <h6 class="card-title fw-bold mb-2">Transacciones</h6>
+                    <p class="text-muted small mb-3">Gestionar transacciones</p>
+                    <a href="#" class="btn btn-sm btn-primary">Ver Detalles</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

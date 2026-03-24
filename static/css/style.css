@@ -21,12 +21,17 @@ body {
 header {
   flex-shrink: 0;
   z-index: 1000;
+  line-height: 1;
 }
 
 main {
   display: flex;
   flex: 1;
   overflow: hidden;
+  margin-top: -1px; /* Elimina el gap entre navbar y main */
+}
+.card{
+  background-color: #f8f9fa;
 }
 
 .sidebar {
@@ -46,8 +51,16 @@ main {
   flex: 1;
   overflow-y: auto;
   padding: 2rem;
-  background-color: #ffffff;
+  background-color: #EEEEEE;
   transition: margin-left 0.3s ease;
+}
+
+.navbar-personalizado {
+  background-color: #86B0BD;
+}
+.navbar-personalizado .navbar-brand,
+.navbar-personalizado .nav-link {
+  color: #000000;
 }
 
 #sidebarToggle {
@@ -56,7 +69,7 @@ main {
 }
 
 #sidebarToggle:hover {
-  background-color: #e9ecef;
+  background-color: #5368780a ;
 }
 
 /* Responsive */
@@ -132,9 +145,6 @@ main {
   user-select: none;
 }
 
-.navbar-personalizado {
-  background-color: #E3DAC9;
-}
 
 @media (min-width: 768px) {
   .bd-placeholder-img-lg {
