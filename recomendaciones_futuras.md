@@ -34,3 +34,22 @@ Tener un panel para incio de sesion
 
 ## Logout
 Manejar un cierre de sesion
+
+# Asignacion
+El modulo debe cubrir:
+- Asignación de inventario
+    - Asignar uno o varios items
+    - definir responsable
+    - definir ubicacion
+    - Fecha de asignación
+
+- Devolucion
+    - Liberar asignaciones
+    - Registrar fecha de retorno
+
+- Historial
+    - Daber quien tuvo que y cuando
+    - Auditoria completa
+
+- Esta de asignacion
+
