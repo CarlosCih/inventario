@@ -3,6 +3,46 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h1>Inventory Dashboard</h1>
-<p>Welcome to the inventory dashboard.</p>
+<div class="container mt-4">
+    <h1>Inventory Dashboard</h1>
+    <p>Welcome to the inventory management system. Use the navigation menu to manage your inventory.</p>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-1">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fa fa-folder-open fs-1 text-primary"></i>
+                    </div>
+                    <h6 class="card-title fw-bold mb-2">Articulos</h6>
+                    <p class="text-muted small mb-3">Gestionar artículos</p>
+                    <a href="#" class="btn btn-sm btn-primary">Ver Artículos</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-1">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fa fa-archive fs-1 text-primary"></i>
+                    </div>
+                    <h6 class="card-title fw-bold mb-2">Existencias</h6>
+                    <p class="text-muted small mb-3">Gestionar existencias</p>
+                    <a href="#" class="btn btn-sm btn-primary">Ver Existencias</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-1">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="fa fa-cubes fs-1 text-primary"></i>
+                    </div>
+                    <h6 class="card-title fw-bold mb-2">Articulos de stock</h6>
+                    <p class="text-muted small mb-3">Gestionar stock</p>
+                    <a href="#" class="btn btn-sm btn-primary">Ver Stock</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
